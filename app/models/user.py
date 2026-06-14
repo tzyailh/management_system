@@ -1,13 +1,16 @@
 from sqlalchemy import Column, Integer, String
 from app.db.base import Base
+from sqlalchemy.orm import relationship
 
 class User(Base):
-    __tablename__ = "users"
+    __tablename__ = "sys_user"
 
-    id = Column(Integer, primary_key=True, index=True)
-    email = Column(String(100), unique=True, index=True)
-    name = Column(String(50))
-    password = Column(String(255))
+    id = Column(Integer, primary_key=True)
 
-    # 权限字段
-    role = Column(String(20), default="user")  # admin / user
+    username = Column(String(50))
+
+    roles = relationship(
+        "Role",
+        secondary="sys_user_role",
+        back_populates="users"
+    )

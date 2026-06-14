@@ -2,12 +2,12 @@ from pydantic import BaseModel
 
 class UserCreate(BaseModel):
     name: str
-    email: str
+    username: str
 
 class UserOut(BaseModel):
     id: int
     name: str
-    email: str
+    username: str
 
     class Config:
         from_attributes = True

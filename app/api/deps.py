@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.models.user import User
 from app.core.security import SECRET_KEY, ALGORITHM
+from app.services.auth_service import get_current_permissions
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/login")
 
@@ -36,3 +37,24 @@ def require_admin(user: User = Depends(get_current_user)):
     if user.role != "admin":
         raise HTTPException(status_code=403, detail="Admin only")
     return user
+
+def permission_required(code:str):
+
+    async def checker(
+        current_user=Depends(get_current_user)
+    ):
+
+        permissions = get_current_permissions(
+            current_user
+        )
+
+        if code not in permissions:
+
+            raise HTTPException(
+                status_code=403,
+                detail="权限不足"
+            )
+
+        return current_user
+
+    return checker

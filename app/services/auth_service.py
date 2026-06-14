@@ -3,10 +3,9 @@ from app.models.user import User
 from app.core.security import hash_password, verify_password, create_access_token
 
 
-def register_user(db: Session, email: str, name: str, password: str):
-    print('查看用户名',email,name,password)
+def register_user(db: Session, username: str, name: str, password: str):
     user = User(
-        email=email,
+        username=username,
         name=name,
         password=hash_password(password)
     )
@@ -16,8 +15,8 @@ def register_user(db: Session, email: str, name: str, password: str):
     return user
 
 
-def authenticate_user(db: Session, email: str, password: str):
-    user = db.query(User).filter(User.email == email).first()
+def authenticate_user(db: Session, username: str, password: str):
+    user = db.query(User).filter(User.username == username).first()
 
     if not user:
         return None
@@ -33,3 +32,13 @@ def login_user(user: User):
         data={"sub": str(user.id), "role": user.role}
     )
     return token
+
+def get_current_permissions(user):
+
+    permissions = set()
+
+    for role in user.roles:
+        for p in role.permissions:
+            permissions.add(p.code)
+
+    return permissions
